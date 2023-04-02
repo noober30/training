@@ -1,6 +1,5 @@
-#úloha///// (snáď som pochopil dobre zadanie a nezjednodušil som si to zase moc :D )
+#úloha_1
 
-#for
 Zoznam = a, b, c, d, e =("Text"), 3, 2.5, False, True 
 Zoznam = [("Text"), 3, 2.5, False, True]
 for typ in Zoznam:
@@ -14,33 +13,39 @@ print ("*********************************")
 #úloha_2
 y=0
 while y < 5:
-    if y < 5:
-        y+=1
-        print ("Hodnota je menšia ako 5")
-    print (y)
-    continue
-print ("Hodnota je rovná 5")
+    print ("Premenná je menšia ako 5")
+    y+=1
+    if y ==5:
+       print ("Premenná je rovná 5")
+       break
+       if y <5:
+          continue
 
-print ("*********************************")
-
-
-#while/////nič lepšie a jednoduchšie ma nenapadlo, chcel si while, máš while :D
-
-g, h, i, j, k = ("Text"), 3, 2.5, False, True
-while g  == ("Text"):
-    print (type("Text"))
-    while h == 3:
-       print (type(3))
-       while i == 2.5:
-           print (type(2.5))
-           while j == False:
-               print (type(False))
-               while k ==  True:
-                    print == (type(True))
-                    continue
-else:
-    print ()
-#nevypisuje mi poslednú hodnotu k, neviem prečo, nechápem 
+"""  snažil som sa to prepísať tak čo najpresnejšie ako si mi zadal,
+nenapísal si že sa majú zobrazovať aj jednotlivé čísla (premenné) :D """
+    
     
 
-#
+       
+     
+
+print ("*********************************")
+#úloha_3
+
+'''   dúfam že som pochopil zadanie správne, lebo loop for je skoro
+ten istý ako úloha_1   '''
+
+#loop for
+zoznam = ["Auto", 65, 2.6, True, [4,'motorka'],{}]
+for i in zoznam:
+   print (type(i ))
+
+
+
+
+
+
+
+
+
+
