@@ -1,4 +1,4 @@
-#úloha 1     (snáď som pochopil dobre zadanie a nezjednodušil som si to zase moc :D )
+#úloha///// (snáď som pochopil dobre zadanie a nezjednodušil som si to zase moc :D )
 
 #for
 Zoznam = a, b, c, d, e =("Text"), 3, 2.5, False, True 
@@ -9,9 +9,6 @@ for typ in Zoznam:
 
 print ("*********************************")
 
-#neviem sa dostať do ďaľšieho riadku
-
-print ("*********************************")
 
 
 #úloha_2
@@ -22,7 +19,9 @@ while y < 5:
         print ("Hodnota je menšia ako 5")
     print (y)
     continue
-print ("je rovná 5")
+print ("Hodnota je rovná 5")
+
+print ("*********************************")
 
 
 #while/////nič lepšie a jednoduchšie ma nenapadlo, chcel si while, máš while :D
