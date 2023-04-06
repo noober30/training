@@ -13,13 +13,12 @@ print ("*********************************")
 #úloha_2
 y=0
 while y < 5:
+    print (y)
     print ("Premenná je menšia ako 5")
     y+=1
     if y ==5:
        print ("Premenná je rovná 5")
-       break
-       if y <5:
-          continue
+       
 
 """  snažil som sa to prepísať tak čo najpresnejšie ako si mi zadal,
 nenapísal si že sa majú zobrazovať aj jednotlivé čísla (premenné) :D """
@@ -36,6 +35,7 @@ print ("*********************************")
 ten istý ako úloha_1   '''
 
 #loop for
+
 zoznam = ["Auto", 65, 2.6, True, [4,'motorka'],{}]
 for i in zoznam:
    print (type(i ))
