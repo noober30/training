@@ -1,0 +1,11 @@
+zoznam = list (range (100))  
+for num in zoznam:
+    if num %3 == 0 and num %5 ==0:
+        print (num) 
+
+slovo = input("Napíš slovo a zisti, či je dané slovo palindróm      :        ")
+if slovo == slovo [::-1]:
+    print ("Slovo je palindróm")
+else:
+    print ("Slovo nie je palindróm")
+
