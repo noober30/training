@@ -1,7 +1,11 @@
+#úloha_1
+
 zoznam = list (range (100))  
 for num in zoznam:
     if num %3 == 0 and num %5 ==0:
         print (num) 
+
+#úloha_2
 
 slovo = input("Napíš slovo a zisti, či je dané slovo palindróm      :        ")
 if slovo == slovo [::-1]:
