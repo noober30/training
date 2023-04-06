@@ -5,7 +5,8 @@ for num in zoznam:
     if num %3 == 0 and num %5 ==0:
         print (num) 
 
-#úloha_2
+#úloha_2 ///// tu som musel googliť, lebo som sa dozvedel že list nepodporuje .reverse :D 
+#ale myslím že tomu chápem, vraj sa to volá slice, doučím sa. Myslím že som "vyrezal" celý string a zobrazil odzadu (-1)
 
 slovo = input("Napíš slovo a zisti, či je dané slovo palindróm      :        ")
 if slovo == slovo [::-1]:
