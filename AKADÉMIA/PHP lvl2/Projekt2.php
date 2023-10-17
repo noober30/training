@@ -6,110 +6,141 @@
     <title>Student login</title>
 </head>
 <body>
+
     <?php 
         date_default_timezone_set("Pacific/Midway");
-        echo "Datum a cas:  ".displayDateTime()."<br>";
+        echo "Datum a cas:  ".display()."<br>";
     ?>
 
-    <form action="Projekt2.php" method="post">
+    <form action="ProjektNew.php" method="post">
     Meno: <input type="text", name="name">
-    <input type="submit">
+    <input type="submit" value="Zapisat prichod">
     </form> 
 
     Vitaj, <?php echo htmlspecialchars($_REQUEST["name"])."!"."<br>"; ?><br>
 
     <?php 
-    $fileName = "studenti2.json";
-    $student = $_REQUEST["name"];
-    $lastId = 1;
-    $newStudent = ["meno"=>$_REQUEST["name"], "id"=>$lastId];
 
+    $textFile = "loginTimeNew.txt";
+    $jsonFile = "studentiNew.json";
+    $jsonFile2 = "prichodyNew.json";
+    $studentName = $_REQUEST["name"];
+    $newStudent = ["meno"=>$_REQUEST["name"]];
 
-    function displayDateTime()
-        {
-            return date("d.m.Y H:i:s");
-        };
+    function display()
+    {
+        return date("d.m.Y H:i:s");
+    }
 
-    function writeTimeName($logDateTime) 
+    function writeTimeName($logDateTime)
         {   
+            global $textFile; 
             $arriveTime = strtotime($logDateTime);
             $timeStart = strtotime(date("d.m.Y 0:00:00"));
             $timeOk = strtotime(date("d.m.Y 07:59:59"));
             $timeEnd = strtotime(date("d.m.Y 19:59:59"));
 
-            if ($arriveTime>$timeStart && $arriveTime<$timeOk)
+            if(file_exists($textFile))
             {
-                $logDateTime = $logDateTime;
-            } elseif ($arriveTime> $timeEnd)
-            {
-                die("neda sa zapisat");   
+                if ($arriveTime>$timeStart && $arriveTime<$timeOk)
+                {
+                    $logDateTime = $logDateTime;
+                } elseif ($arriveTime> $timeEnd)
+                {
+                    die("neda sa zapisat");   
+                } else
+                {
+                    $logDateTime = $logDateTime." meskanie";
+                }
+                $name = isset($_REQUEST["name"]) ? htmlspecialchars($_REQUEST["name"]) : "";
+                
+                if (empty($name))
+                {
+                    echo strtoupper("Zadaj svoje meno!!!"."<br>"."<br>");
+                } else
+                {
+                    file_put_contents($textFile,$_REQUEST["name"]." - ". $logDateTime."\n", FILE_APPEND); 
+                   
+                }
             } else
             {
-                $logDateTime = $logDateTime." meskanie";
-            }
-
-            $name = isset($_REQUEST["name"]) ? htmlspecialchars($_REQUEST["name"]) : "";
-            
-            if (empty($name))
-            {
-                echo strtoupper("Zadaj svoje meno!!!"."<br>"."<br>");
-            } else
-            {
-                file_put_contents("loginTime2.txt",$_REQUEST["name"]." - ". $logDateTime."\n", FILE_APPEND); 
-               
+                file_put_contents($textFile,$_REQUEST["name"]." - ". $logDateTime."\n", FILE_APPEND); 
             }
         } 
 
     function getLogs()
-        {
-            $fileContents = file_get_contents("loginTime2.txt");
-            return nl2br($fileContents);
-        }
-
-
-    function loadCreateJsonFile($fileName)
     {
-        if (file_exists($fileName))
-        {
-        $jsonContent = file_get_contents($fileName);
-        $jsonData = json_decode($jsonContent, True);
-
-        return $jsonData;
-        }else
-        {
-            file_put_contents($fileName, "[]");
-            return[];
-        }
+        global $textFile;
+        $fileContents = file_get_contents($textFile);
+        return nl2br($fileContents."<br>");
     }
 
-    function addStudent($fileName, $student)
+    function loadCreateJsonFile($jsonFile)
     {
-        $existingStudents = loadCreateJsonFile($fileName);
-        if (!is_array($existingStudents))
+        if (file_exists($jsonFile))
         {
-            $existingStudents=[];
+            $jsonContent = file_get_contents($jsonFile);
+            $jsonData = json_decode($jsonContent, True);
+            print_r($jsonData)."<br>";
+        } else
+        {   
+            $jsonData = [];
+            file_put_contents($jsonFile, json_encode($jsonData)); 
         }
-        $highestId = 0;
-        foreach ($existingStudents as $existingStudent) {
-            if(isset($existingStudent["id"]) && $existingStudent["id"]>$highestId)
-            {
-                $highestId=$existingStudent["id"];
+        return $jsonData;
+    }
+
+    function addStudent($jsonFile, $studentName)
+    {
+        $existingStudents = loadCreateJsonFile($jsonFile);
+        $totalArrivals = 1;
+    
+        foreach ($existingStudents as &$existingStudent) 
+        {
+            if (isset($existingStudent["name"]) && $existingStudent["name"] === $studentName) {
+                $totalArrivals++;
             }
         }
-        $student["id"] = $highestId+1;
-        $existingStudents[] = $student;
-        $lastID = $student["id"];
-
+    
+        $newStudent = ["name" => $studentName, "totalArrivals" => $totalArrivals];
+        $existingStudents[] = $newStudent;
         $jsonData = json_encode($existingStudents, JSON_PRETTY_PRINT);
-        file_put_contents($fileName, $jsonData);
-        print_r($jsonData."<br>");
-
+        file_put_contents($jsonFile, $jsonData);
+        return $totalArrivals;
+    }
+    
+    function addArrival($jsonFile2, $logDateTime)
+    {
+        $existingArrivals = loadCreateJsonFile($jsonFile2);
+        $existingArrivals[] = $logDateTime;
+        $jsonData = json_encode($existingArrivals, JSON_PRETTY_PRINT);
+        file_put_contents($jsonFile2,$jsonData);
+        $jsonArray = json_decode(file_get_contents($jsonFile2, True));
+        $newArray = [];
+        foreach ($jsonArray as $timestamp)  
+        {
+            $time = strtotime($timestamp);
+            $timeOk = strtotime(date("d.n.Y 8:00:00"));
+            if ($time>$timeOk)
+            {
+                $timestamp .= " meskanie";
+            }
+            $newArray[] = $timestamp;
+        }   
+        file_put_contents($jsonFile2, json_encode($newArray, JSON_PRETTY_PRINT));
     }
 
-
-    writeTimeName(displayDateTime());
-    addStudent($fileName, $newStudent, $lastId);
-    echo getLogs();
+    function studentiLate($jsonFile2)
+    {
+        
+    }
+    writeTimeName(display());
+    $studentName = isset($_REQUEST["name"]) ? htmlspecialchars($_REQUEST["name"]) : "";
+    $totalArrivals = addStudent($jsonFile, $studentName);
+    addArrival($jsonFile2, display());
+    echo "<br><br>Total Arrivals for $studentName: $totalArrivals<br><br>";
+    echo getLogs() 
+    
     ?>
 
     
