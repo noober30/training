@@ -128,9 +128,9 @@
 class Arrivals{
     private $jsonFile2;
 
-    public function __construct()
+    public function __construct($jsonFile2)
     {
-        
+        $this->jsonFile2 = $jsonFile2;
     }
     public static function addArrival($jsonFile2, $logDateTime)
     {
@@ -153,10 +153,13 @@ class Arrivals{
         file_put_contents($jsonFile2, json_encode($newArray, JSON_PRETTY_PRINT));
     }
 }
+$students = new Students($jsonFile);
+$arrivals = new Arrivals($jsonFile2);
 
+$totalArrivals = $students->addStudent($jsonFile,$studentName);
+$arrivals->addArrival($jsonFile2,display());
 writeTimeName(display());
 
 ?>
 </body>
 </html>
-
