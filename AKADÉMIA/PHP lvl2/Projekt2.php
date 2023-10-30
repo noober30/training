@@ -6,23 +6,24 @@
     <title>Document</title>
 </head>
 <body>
-    <?php 
+    <?php
+
         date_default_timezone_set("Pacific/Midway");
         echo "Datum a cas:  ".display()."<br>";
     ?>
 
-    <form action="ProjektOOP.php" method="post">
+    <form action="ProjektNew.php" method="post">
     Meno: <input type="text", name="name">
     <input type="submit" value="Zapisat prichod">
     </form> 
 
-    Vitaj, <?php echo htmlspecialchars($_REQUEST["name"])."!"."<br>"; ?><br>
+    Vitaj, <?php echo (!empty($_REQUEST["name"]) ? htmlspecialchars($_REQUEST["name"]) : "host") . "!<br>"; ?>
 
     <?php 
-    $textFile = "loginTimeOOP.txt";
-    $jsonFile = "studentiOOP.json";
-    $jsonFile2 = "prichodyOOP.json";
-    $studentName = $_REQUEST["name"];
+    $textFile = "loginTimeNew.txt";
+    $jsonFile = "studentiNew.json";
+    $jsonFile2 = "prichodyNew.json";
+    $studentName = !empty($_REQUEST["name"]) ? htmlspecialchars($_REQUEST["name"]) : "host";
     $newStudent = ["meno"=>$_REQUEST["name"]];
 
     function display()
@@ -41,39 +42,32 @@
         $timeOk = strtotime(date("d.m.Y 07:59:59"));
         $timeEnd = strtotime(date("d.m.Y 19:59:59"));
 
-        if(file_exists($textFile))
-        {
-            if ($arriveTime > $timeStart && $arriveTime < $timeOk)
-            {
+        if (file_exists($textFile)) {
+            if ($arriveTime > $timeStart && $arriveTime < $timeOk) {
                 $logDateTime = $logDateTime;
-            } elseif ($arriveTime > $timeEnd)
-            {
-                die("neda sa zapisat");   
-            } else
-            {
-                $logDateTime = $logDateTime." meskanie";
+            } elseif ($arriveTime > $timeEnd) {
+                die("neda sa zapisat");
+            } else {
+                $logDateTime = $logDateTime . " meskanie";
             }
-            $name = isset($_REQUEST["name"]) ? htmlspecialchars($_REQUEST["name"]) : "";
-
-            if (empty($name))
-            {
-                echo strtoupper("Zadaj svoje meno!!!"."<br>"."<br>");
-            } else
-            {
-                file_put_contents($textFile,$_REQUEST["name"]." - ". $logDateTime."\n", FILE_APPEND); 
+    
+            if (!empty($studentName)) {
+                file_put_contents($textFile, $studentName . " - " . $logDateTime . "\n", FILE_APPEND);
             }
-
-        } else
-        {   if ($arriveTime > $timeStart && $arriveTime > $timeOk)
-            {
-
-            file_put_contents($textFile,$_REQUEST["name"]." - ". $logDateTime." meskanie"."\n", FILE_APPEND);
+    
+            if (empty($studentName)) {
+                echo strtoupper("Zadaj svoje meno!!!" . "<br>" . "<br>");
+                $studentName = "host";
+            }
+        } else {
+            if ($arriveTime > $timeStart && $arriveTime > $timeOk) {
+                file_put_contents($textFile, $studentName . " - " . $logDateTime . " meskanie" . "\n", FILE_APPEND);
             }
         }
 
-        $totalArrivals = Prichody::addStudent($jsonFile, $studentName);
-        addArrival($jsonFile2, display());
-        $data = Prichody::loadCreateJsonFile($jsonFile); 
+        $totalArrivals = Students::addStudent($jsonFile, $studentName);
+        Arrivals::addArrival($jsonFile2, display());
+        $data = Students::loadCreateJsonFile($jsonFile); 
         echo "Total Arrivals for $studentName: $totalArrivals<br><br>";
         print_r($data);
         echo "<br><br>";
@@ -87,10 +81,19 @@
         return nl2br($fileContents."<br>");
     }
      
-    class Prichody {
-        public static function loadCreateJsonFile($jsonFile)
+    class Students {
+        private $jsonFile;
+        public function __construct($jsonFile)
         {
-            if (file_exists($jsonFile))
+            $this->jsonFile = $jsonFile;
+        }
+        public static function loadCreateJsonFile($jsonFile)
+        {   
+            if (!file_exists($jsonFile))
+            {
+                file_put_contents($jsonFile, "");
+            }
+            else if (file_exists($jsonFile))
             {
                 $jsonContent = file_get_contents($jsonFile);
                 $jsonData = json_decode($jsonContent, True);
@@ -122,9 +125,16 @@
         }
     }
 
-    function addArrival($jsonFile2, $logDateTime)
+class Arrivals{
+    private $jsonFile2;
+
+    public function __construct()
     {
-        $existingArrivals = Prichody::loadCreateJsonFile($jsonFile2);
+        
+    }
+    public static function addArrival($jsonFile2, $logDateTime)
+    {
+        $existingArrivals = Students::loadCreateJsonFile($jsonFile2);
         $existingArrivals[] = $logDateTime;
         $jsonData = json_encode($existingArrivals, JSON_PRETTY_PRINT);
         file_put_contents($jsonFile2, $jsonData);
@@ -142,8 +152,11 @@
         }   
         file_put_contents($jsonFile2, json_encode($newArray, JSON_PRETTY_PRINT));
     }
+}
 
-    writeTimeName(display());
-    ?>
+writeTimeName(display());
+
+?>
 </body>
 </html>
+
