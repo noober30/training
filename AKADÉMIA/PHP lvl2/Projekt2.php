@@ -33,7 +33,6 @@
     }
 
     function writeTimeName($logDateTime, $jsonFile, $textFile, $studentName, $jsonFile2)
-//checks if txt file does exists, if so, writes time and name. If it doesn't, creates and writes txt file
     {   
         $arriveTime = strtotime($logDateTime);
         $timeStart = mktime(00,00,00);
@@ -81,7 +80,6 @@
     } 
 
     function getLogs($textFile)
-    //reads txt File
     {       
         $fileContents = file_get_contents($textFile);
         return nl2br($fileContents."<br>");
@@ -94,16 +92,15 @@
         {
             $this->jsonFile = $jsonFile;
         }
-        //checks if student was late
+
         private static function checkLateArrival($logDateTime)
         {
             $time = strtotime($logDateTime);
-            $timeOk = mktime(8,0,0);
+            $timeOk = mktime(8, 0, 0);
             return $time > $timeOk;
         }
 
         public static function loadCreateJsonFile($jsonFile)
-        //load or create studenti.json
         {   
             if (file_exists($jsonFile))
             {
@@ -119,7 +116,6 @@
         }
 
         public static function addStudent($jsonFile, $studentName)
-        //if file exists, iterates throught studenti.json and increments num of student's arrivals 
         {
             $existingStudents = self::loadCreateJsonFile($jsonFile);
             $totalArrivals = 1;
@@ -130,7 +126,6 @@
                     $totalArrivals++;
                 }
             }
-        //updates json file
             $newStudent = ["name" => $studentName, "totalArrivals" => $totalArrivals];
             $existingStudents[] = $newStudent;
             $jsonData = json_encode($existingStudents, JSON_PRETTY_PRINT);
@@ -139,44 +134,41 @@
         }
     }
 
-class Arrivals{
-    private $jsonFile2;
+    class Arrivals{
+        private $jsonFile2;
 
-    public function __construct($jsonFile2)
-    {
-        $this->jsonFile2 = $jsonFile2;
-    }
-    public static function addArrival($jsonFile2, $logDateTime)
-    //writes time of arrival to json file
-    {
-        $existingArrivals = Students::loadCreateJsonFile($jsonFile2);
-        $existingArrivals[] = $logDateTime;
-        $jsonData = json_encode($existingArrivals, JSON_PRETTY_PRINT);
-        file_put_contents($jsonFile2, $jsonData);
-        $jsonArray = json_decode(file_get_contents($jsonFile2, True));
-        $newArray = [];
-    //iterates through json file and writes .meskanie to the late arrival
-        foreach ($jsonArray as $timestamp)  
+        public function __construct($jsonFile2)
         {
-            $time = strtotime($timestamp);
-            $timeOk = strtotime(date("d.n.Y 8:00:00"));
-            if ($time > $timeOk)
+            $this->jsonFile2 = $jsonFile2;
+        }
+        
+        public static function addArrival($jsonFile2, $logDateTime)
+        {
+            $existingArrivals = Students::loadCreateJsonFile($jsonFile2);
+            $existingArrivals[] = $logDateTime;
+            $jsonData = json_encode($existingArrivals, JSON_PRETTY_PRINT);
+            file_put_contents($jsonFile2, $jsonData);
+            $jsonArray = json_decode(file_get_contents($jsonFile2, True));
+            $newArray = [];
+            foreach ($jsonArray as $timestamp)  
             {
-                $timestamp .= " meskanie";
-            }
-            $newArray[] = $timestamp;
-        }   
-        file_put_contents($jsonFile2, json_encode($newArray, JSON_PRETTY_PRINT));
+                $time = strtotime($timestamp);
+                $timeOk = strtotime(date("d.n.Y 8:00:00"));
+                if ($time > $timeOk)
+                {
+                    $timestamp .= " meskanie";
+                }
+                $newArray[] = $timestamp;
+            }   
+            file_put_contents($jsonFile2, json_encode($newArray, JSON_PRETTY_PRINT));
+        }
     }
-}
 
+    $students = new Students($jsonFile);
+    $arrivals = new Arrivals($jsonFile2);
 
-$students = new Students($jsonFile);
-$arrivals = new Arrivals($jsonFile2);
+    writeTimeName(timeDateNow(), $jsonFile, $textFile, $studentName, $jsonFile2);
 
-
-writeTimeName(timeDateNow(), $jsonFile, $textFile, $studentName, $jsonFile2,);
-
-?>
+    ?>
 </body>
 </html>
