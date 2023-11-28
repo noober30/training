@@ -8,24 +8,26 @@
 <body>
     <?php
 
-        date_default_timezone_set("Pacific/Midway");
-        echo "Datum a cas:  ".timeDateNow()."<br>";
+    date_default_timezone_set("Pacific/Midway");
+    echo "Datum a cas:  ".timeDateNow()."<br>";
+
     ?>
 
     <form action="ProjektNew.php" method="post">
-    Meno: <input type="text" name="name">
-    <input type="submit" value="Zapisat prichod">
+        Meno: <input type="text" name="name">
+        <input type="submit" value="Zapisat prichod">
     </form> 
 
     Vitaj, <?php echo (!empty($_REQUEST["name"]) ? htmlspecialchars($_REQUEST["name"]) : "host") . "!<br>"; ?>
 
     <?php 
-    
-    $textFile = "loginTimeNew.txt";
-    $jsonFile = "studentiNew.json";
-    $jsonFile2 = "prichodyNew.json";
+
+    const TEXT_FILE = "loginTimeNew.txt";
+    const JSON_FILE = "studentiNew.json";
+    const JSON_FILE2 = "prichodyNew.json";
+
     $studentName = !empty($_REQUEST["name"]) ? htmlspecialchars($_REQUEST["name"]) : "host";
-    $newStudent = ["meno"=>$_REQUEST["name"]];
+    $newStudent = ["meno" => $_REQUEST["name"]];
 
     function timeDateNow()
     {
@@ -35,14 +37,14 @@
     function writeTimeName($logDateTime, $jsonFile, $textFile, $studentName, $jsonFile2)
     {   
         $arriveTime = strtotime($logDateTime);
-        $timeStart = mktime(00,00,00);
-        $timeOk = mktime(7,59,59);
-        $timeEnd = mktime(19,59,59);
+        define("TIME_START", mktime(0, 0, 0));
+        define("TIME_OK", mktime(8, 0, 0));
+        $timeEnd = mktime(20, 0, 0);
 
         if (!file_exists($textFile)) {
-            if ($arriveTime > $timeStart && $arriveTime < $timeOk) {
+            if ($arriveTime > TIME_START && $arriveTime <= TIME_OK) {
                 $logDateTime = $logDateTime;
-            } elseif ($arriveTime > $timeEnd) {
+            } elseif ($arriveTime >= $timeEnd) {
                 die("<br>Neda sa zapisat");
             } else {
                 $logDateTime = $logDateTime . " meskanie";
@@ -53,7 +55,7 @@
                 $studentName = "host";
             }
         } else {
-            if ($arriveTime > $timeStart && $arriveTime < $timeOk) {
+            if ($arriveTime > TIME_START && $arriveTime < TIME_OK) {
                 $logDateTime = $logDateTime;
             } elseif ($arriveTime > $timeEnd) {
                 die("<br>Neda sa zapisat");
@@ -164,10 +166,10 @@
         }
     }
 
-    $students = new Students($jsonFile);
-    $arrivals = new Arrivals($jsonFile2);
+    $students = new Students(JSON_FILE);
+    $arrivals = new Arrivals(JSON_FILE2);
 
-    writeTimeName(timeDateNow(), $jsonFile, $textFile, $studentName, $jsonFile2);
+    writeTimeName(timeDateNow(), JSON_FILE, TEXT_FILE, $studentName, JSON_FILE2);
 
     ?>
 </body>
